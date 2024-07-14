@@ -1,7 +1,20 @@
 import Head from 'next/head';
 import Navbar from '../components/Navbar';
+import ProductList from '../components/ProductList';
+import Product from '../models/Product';
+import sequelize from '../utils/db';
 
-export default function Products() {
+export async function getServerSideProps() {
+  await sequelize.sync();
+  const products = await Product.findAll();
+  return {
+    props: {
+      products: JSON.parse(JSON.stringify(products)),
+    },
+  };
+}
+
+export default function Products({ products }) {
   return (
     <div>
       <Head>
@@ -11,8 +24,8 @@ export default function Products() {
       </Head>
       <Navbar />
       <main className="p-8">
-        <h1 className="text-3xl font-bold">Our Products</h1>
-        {/* Product list will go here */}
+        <h1 className="text-3xl font-bold mb-6">Our Products</h1>
+        <ProductList products={products} />
       </main>
     </div>
   );
